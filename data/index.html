@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>WiYourte</title>
+    <link rel="icon" type="image/png" sizes="144x144" href="/favicon-144x144.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon.ico">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#00878f">
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport'>
+    <script type="text/javascript" src="chart.js"></script>
+    <script type="text/javascript" src="papaparse.min.js"></script>
+    <script type="text/javascript" src="hammer.min.js"></script>
+    <script type="text/javascript" src="zoom.js"></script>
+</head>
+
+<script>
+
+	Papa.parse("/"+ document.title +".csv", {
+		dynamicTyping: true,
+		download: true,
+		header: true, 
+		delimiter: ",",
+		complete: 	function(results) 
+					{
+						console.log(results);
+
+						display(results.data);
+							
+						var loadingdiv = document.getElementById("loading");
+						loadingdiv.style.visibility = "hidden";
+					}
+	});
+	
+	
+	function display(data)
+	{
+	
+		var labels = data.map(function (d) {return d.Date});
+		var values = data.map(function (d) {return d.Value});
+		
+		var ctx = document.getElementById('myChart').getContext('2d');
+		window.chart = new Chart(ctx, {
+			// The type of chart we want to create
+			type: 'line',
+
+			// The data for our dataset
+			data: {
+				labels: labels,
+				datasets: [{
+					label: document.title,
+					fill: false,
+					backgroundColor: 'rgb(255, 99, 132)',
+					borderColor: 'rgb(255, 99, 132)',
+					cubicInterpolationMode: 'monotone',
+					data: values}]
+			},
+						
+
+
+			// Configuration options go here
+			options: {
+
+				plugins: {
+					zoom: {
+						pan: {
+							enabled: true,
+							mode: 'x',
+							speed: 100,
+							threshold: 100
+						},
+						zoom: {
+
+							enabled: true,						
+							mode: 'x',
+							// Speed of zoom via mouse wheel
+							// (percentage of zoom on a wheel event)
+							speed: 10.0,
+							// Minimal zoom distance required before actually applying zoom
+							threshold: 2,
+							// On category scale, minimal zoom level before actually applying zoom
+							sensitivity: 1
+						}
+					}
+				}
+			}
+			
+			});
+	}
+	
+	window.resetZoom = function() {
+			window.chart.resetZoom();
+		};
+	
+	</script>
+
+<body>
+    <center>
+		<canvas id="myChart" width="200" height="100"></canvas>
+        <h1><script> document.write(document.title); </script> log</h1>
+		<div id="chart_div"></div>
+		<div id="loading">Loading ...</div>
+		
+		 <button onclick="resetZoom()"><></button> 
+    </center>
+
+    <style>
+	body {
+	    font-family: sans-serif;
+	    font-size: 22pt;
+	    margin: 0;
+	    margin-top: 6px;
+	}
+
+	h1 {
+	    font-size: 1.5em;
+	    font-weight: normal;
+	    margin: 0px 0px 12px 0px;
+	}
+
+	button {
+	    font-size: 14pt;
+	    width: 2em;
+	}
+
+	center {
+	    padding: 1em;
+	    margin: auto;
+	    width: 90%;
+	    box-shadow: #777 2px 2px 5px;
+	    box-sizing: border-box;
+	}
+
+	#loading {
+		margin-bottom: 12px;
+	}
+
+	@media only screen and (max-device-width: 700px) {
+	    center {
+		width: 100%;
+		height: 100vh;
+		overflow: auto;
+	    }
+	}
+    </style>
+</body>
+
+</html>
